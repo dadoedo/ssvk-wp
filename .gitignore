@@ -1,0 +1,26 @@
+# Docker
+docker-compose.override.yml
+
+# WordPress core (necommitovať)
+wp-content/index.php
+wp-content/themes/twenty*/
+wp-content/themes/index.php
+wp-content/plugins/index.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/debug.log
+
+# Naša téma sa commitne
+# wp-content/themes/ssvk-theme/
+
+# Node modules (ak budeš používať)
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
