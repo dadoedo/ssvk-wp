@@ -202,25 +202,12 @@ main {
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
 }
 
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
-    pointer-events: none;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 1;
-    animation: fadeIn 0.8s ease-out;
-}
 
 @keyframes fadeIn {
     from {
@@ -1046,5 +1033,307 @@ footer::before {
     
     .hero {
         padding: var(--spacing-md) var(--spacing-sm);
+    }
+    
+}
+
+/* ============================================
+   PAGE CONTENT (Standard WordPress Pages)
+   ============================================ */
+.page-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.page-header h1 {
+    font-size: var(--font-size-h1);
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+}
+
+.page-body {
+    line-height: 1.8;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+}
+
+/* ============================================
+   GUTENBERG BLOCKS STYLES
+   ============================================ */
+/* Paragraphs */
+.page-body p,
+.wp-block-paragraph {
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.8;
+}
+
+/* Headings */
+.page-body h2,
+.wp-block-heading h2,
+h2.wp-block-heading {
+    font-size: var(--font-size-h2);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.page-body h3,
+.wp-block-heading h3,
+h3.wp-block-heading {
+    font-size: var(--font-size-h3);
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.page-body h4,
+.wp-block-heading h4,
+h4.wp-block-heading {
+    font-size: 1.25rem;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+/* Lists */
+.page-body ul,
+.page-body ol,
+.wp-block-list {
+    margin-bottom: var(--spacing-sm);
+    padding-left: var(--spacing-md);
+}
+
+.page-body ul li,
+.wp-block-list li {
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.8;
+}
+
+.page-body ul {
+    list-style-type: disc;
+}
+
+.page-body ol {
+    list-style-type: decimal;
+}
+
+/* Links */
+.page-body a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--transition);
+}
+
+.page-body a:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Images */
+.page-body img,
+.wp-block-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    margin: var(--spacing-md) 0;
+    box-shadow: var(--shadow-md);
+}
+
+.wp-block-image {
+    margin: var(--spacing-md) 0;
+}
+
+.wp-block-image figcaption {
+    text-align: center;
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+    margin-top: var(--spacing-xs);
+    font-style: italic;
+}
+
+/* Blockquote */
+.page-body blockquote,
+.wp-block-quote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    font-style: italic;
+    color: var(--color-text-light);
+    background: var(--color-bg-light);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+}
+
+.wp-block-quote cite {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-small);
+    color: var(--color-text-muted);
+    font-style: normal;
+}
+
+/* Code */
+.page-body code,
+.wp-block-code code {
+    background: var(--color-bg-gray);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--color-primary-dark);
+}
+
+.wp-block-code {
+    background: var(--color-bg-dark);
+    color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--spacing-md) 0;
+}
+
+.wp-block-code code {
+    background: transparent;
+    color: white;
+    padding: 0;
+}
+
+/* Tables */
+.page-body table,
+.wp-block-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.page-body table th,
+.page-body table td,
+.wp-block-table th,
+.wp-block-table td {
+    padding: var(--spacing-sm);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.page-body table th,
+.wp-block-table th {
+    background: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.page-body table tr:nth-child(even),
+.wp-block-table tr:nth-child(even) {
+    background: var(--color-bg-light);
+}
+
+/* Separator */
+.wp-block-separator {
+    margin: var(--spacing-lg) 0;
+    border: none;
+    border-top: 2px solid var(--color-border);
+}
+
+/* Columns */
+.wp-block-columns {
+    margin: var(--spacing-md) 0;
+    gap: var(--spacing-md);
+}
+
+/* Buttons */
+.wp-block-button__link {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition);
+    border: none;
+    cursor: pointer;
+}
+
+.wp-block-button__link:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Video & Embed */
+.wp-block-embed,
+.wp-block-video {
+    margin: var(--spacing-md) 0;
+}
+
+.wp-block-embed iframe,
+.wp-block-video video {
+    width: 100%;
+    border-radius: var(--radius-md);
+}
+
+/* Gallery */
+.wp-block-gallery {
+    margin: var(--spacing-md) 0;
+    gap: var(--spacing-sm);
+}
+
+.wp-block-gallery img {
+    border-radius: var(--radius-md);
+}
+
+/* Group block */
+.wp-block-group {
+    margin: var(--spacing-md) 0;
+}
+
+/* Wide and full width alignment */
+.alignwide {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alignfull {
+    max-width: 100%;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+}
+
+/* Responsive adjustments for page content */
+@media (max-width: 768px) {
+    .page-content {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .page-body h2 {
+        font-size: 1.75rem;
+    }
+    
+    .page-body h3 {
+        font-size: 1.5rem;
+    }
+    
+    .wp-block-columns {
+        flex-direction: column;
     }
 }
