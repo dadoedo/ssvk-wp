@@ -33,11 +33,12 @@ get_header();
             // Gymnázium A. H. Škultétyho
             'gymnazium-a-h-skultetyho' => 'gahsvk-logo-clean.png',
             'gahsvk' => 'gahsvk-logo-clean.png',
-            // Stredná odborná škola (rôzne varianty)
-            'stredna-odbora-skola-velky-krtis' => 'sosz-logo-clean.png',
+            // Stredná odborá škola Veľký Krtíš
+            'stredna-odbora-skola-velky-krtis' => 'sos-vk-logo-clean.png',
+            // Stredná odborná škola Želovce
             'stredna-odborna-skola-zelovce' => 'sosz-logo-clean.png',
             'sosz' => 'sosz-logo-clean.png',
-            // SSŠ Mateja Korvína
+            // Spojená škola Modrý Kameň
             'spojena-skola-modry-kamen' => 'ssmk-logo-clean.png',
             'ssmk' => 'ssmk-logo-clean.png',
         );
