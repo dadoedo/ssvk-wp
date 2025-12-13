@@ -18,48 +18,84 @@ get_header();
     <!-- Rozcestník - Štvorlistok -->
     <section class="rozcestnik">
         <h2>Naše školy</h2>
-        <div class="skoly-grid">
-            <?php
-            $skoly = get_posts(array(
-                'post_type' => 'skola',
-                'posts_per_page' => 4,
-                'orderby' => 'date',
-                'order' => 'ASC'
-            ));
+        <?php
+        // Pozície a farby pre hover overlay
+        $leaf_positions = array(
+            array('position' => 'top-left', 'color' => '#FED512', 'text' => '#1e293b'),
+            array('position' => 'top-right', 'color' => '#26AA4B', 'text' => '#ffffff'),
+            array('position' => 'bottom-left', 'color' => '#1781BD', 'text' => '#ffffff'),
+            array('position' => 'bottom-right', 'color' => '#F58825', 'text' => '#ffffff'),
+        );
+        
+        // Fallback logá pre školy podľa slug-u (ak nie je nastavený thumbnail vo WP)
+        // Aktualizuj podľa skutočných slug-ov škôl v databáze
+        $fallback_logos = array(
+            // Gymnázium A. H. Škultétyho
+            'gymnazium-a-h-skultetyho' => 'gahsvk-logo-clean.png',
+            'gahsvk' => 'gahsvk-logo-clean.png',
+            // Stredná odborná škola (rôzne varianty)
+            'stredna-odbora-skola-velky-krtis' => 'sosz-logo-clean.png',
+            'stredna-odborna-skola-zelovce' => 'sosz-logo-clean.png',
+            'sosz' => 'sosz-logo-clean.png',
+            // SSŠ Mateja Korvína
+            'spojena-skola-modry-kamen' => 'ssmk-logo-clean.png',
+            'ssmk' => 'ssmk-logo-clean.png',
+        );
+        
+        $skoly = get_posts(array(
+            'post_type' => 'skola',
+            'posts_per_page' => 4,
+            'orderby' => 'date',
+            'order' => 'ASC'
+        ));
 
-            if ($skoly) :
-                foreach ($skoly as $skola) :
+        if ($skoly) :
+        ?>
+        <div class="stvorlistok-container">
+            <!-- SVG Štvorlistok ako hlavný element -->
+            <div class="stvorlistok-svg">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="Štvorlistok škôl">
+            </div>
+            
+            <!-- Interaktívne zóny škôl -->
+            <div class="stvorlistok-zones">
+                <?php 
+                $index = 0;
+                foreach ($skoly as $skola) : 
+                    $pos = $leaf_positions[$index % 4];
                     $thumbnail = get_the_post_thumbnail_url($skola->ID, 'medium');
-            ?>
-                <a href="<?php echo get_permalink($skola->ID); ?>" class="skola-card">
-                    <?php if ($thumbnail) : ?>
-                        <img src="<?php echo esc_url($thumbnail); ?>" alt="<?php echo esc_attr($skola->post_title); ?>">
+                    $skola_slug = $skola->post_name;
+                    
+                    // Ak nie je thumbnail, skús fallback logo
+                    $logo_url = $thumbnail;
+                    if (!$logo_url && isset($fallback_logos[$skola_slug])) {
+                        $logo_url = get_template_directory_uri() . '/assets/images/' . $fallback_logos[$skola_slug];
+                    }
+                ?>
+                <a href="<?php echo get_permalink($skola->ID); ?>" 
+                   class="leaf-zone zone-<?php echo esc_attr($pos['position']); ?>"
+                   style="--hover-color: <?php echo esc_attr($pos['color']); ?>; --hover-text: <?php echo esc_attr($pos['text']); ?>;"
+                   title="<?php echo esc_attr($skola->post_title); ?>">
+                    <?php if ($logo_url) : ?>
+                        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($skola->post_title); ?>" class="zone-logo">
                     <?php else : ?>
-                        <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); border-radius: var(--radius-xl) var(--radius-xl) 0 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                            🏫
-                        </div>
+                        <div class="zone-icon">🏫</div>
                     <?php endif; ?>
-                    <div class="skola-card-content">
-                        <h3><?php echo esc_html($skola->post_title); ?></h3>
-                        <?php if ($skola->post_excerpt) : ?>
-                            <p><?php echo esc_html($skola->post_excerpt); ?></p>
-                        <?php else : ?>
-                            <p>Zistite viac o našej škole a jej aktivitách.</p>
-                        <?php endif; ?>
-                        <span class="btn">Viac informácií</span>
-                    </div>
+                    <span class="zone-title"><?php echo esc_html($skola->post_title); ?></span>
                 </a>
-            <?php
-                endforeach;
-            else :
-            ?>
-                <div style="grid-column: 1 / -1; text-align: center; padding: var(--spacing-xl); background: var(--color-bg-light); border-radius: var(--radius-lg); border: 2px dashed var(--color-border);">
-                    <div style="font-size: 4rem; margin-bottom: var(--spacing-md); opacity: 0.5;">🏫</div>
-                    <h3 style="margin-bottom: var(--spacing-sm); color: var(--color-text);">Zatiaľ nie sú pridané žiadne školy</h3>
-                    <p style="color: var(--color-text-light); margin-bottom: var(--spacing-md);">Pridajte školy v <a href="<?php echo admin_url('edit.php?post_type=skola'); ?>" style="color: var(--color-primary); font-weight: 500;">WordPress admin</a>.</p>
-                </div>
-            <?php endif; ?>
+                <?php 
+                    $index++;
+                endforeach; 
+                ?>
+            </div>
         </div>
+        <?php else : ?>
+            <div class="stvorlistok-empty">
+                <div class="empty-icon">🏫</div>
+                <h3>Zatiaľ nie sú pridané žiadne školy</h3>
+                <p>Pridajte školy v <a href="<?php echo admin_url('edit.php?post_type=skola'); ?>">WordPress admin</a>.</p>
+            </div>
+        <?php endif; ?>
     </section>
 
     <!-- Info Sekcia -->

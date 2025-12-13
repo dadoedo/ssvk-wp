@@ -9,7 +9,10 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <a href="<?php echo home_url(); ?>"><?php bloginfo('name'); ?></a>
+                <a href="<?php echo home_url(); ?>">
+                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/logo.svg" alt="<?php bloginfo('name'); ?>" class="logo-img">
+                    <span class="logo-text"><?php bloginfo('name'); ?></span>
+                </a>
             </div>
             <button class="menu-toggle" aria-label="Menu">☰</button>
             <?php

@@ -4,6 +4,12 @@
 
 WordPress web pre organizáciu SSVK, ktorá spája 4 školy. Projekt kombinuje AI-generovaný frontend kód s WordPress admin rozhraním pre správu obsahu.
 
+skoly a ich slugy  a loga 
+Gymnázium A. H. Škultétyho = gymnazium-a-h-skultetyho - gahsvk-logo-clean.png
+Spojená škola Modrý Kameň = spojena-skola-modry-kamen - ssmk-logo-clean.png
+Stredná odborá škola Veľký Krtíš = stredna-odbora-skola-velky-krtis - sos-vk-logo-clean.png
+Stredná odborná škola Želovce = stredna-odborna-skola-zelovce - sosz-logo-clean.png
+
 ## Architektúra
 
 ### Koncept
@@ -24,6 +30,9 @@ WordPress web pre organizáciu SSVK, ktorá spája 4 školy. Projekt kombinuje A
 ssvk-wp/
 ├── docker-compose.yml          # Docker konfigurácia
 ├── wp-content/
+│   ├── uploads/
+│   │   ├── dokumenty/          # PDF dokumenty (pracovné poriadky, atď.)
+│   │   └── vo/                 # Dokumenty verejného obstarávania
 │   └── themes/
 │       └── ssvk-theme/         # Naša custom téma
 │           ├── style.css       # Téma header
@@ -31,9 +40,12 @@ ssvk-wp/
 │           ├── header.php      # Hlavička
 │           ├── footer.php      # Pätka
 │           ├── front-page.php  # Homepage
+│           ├── page.php        # Šablóna pre stránky
 │           ├── single-skola.php    # Šablóna pre školy
 │           ├── single-clanok.php   # Šablóna pre články
 │           ├── archive-clanok.php  # Zoznam článkov
+│           ├── migrations/
+│           │   └── create-pages.php  # Migrácia - vytváranie stránok
 │           └── assets/
 │               ├── css/
 │               │   └── main.css    # Všetky štýly (CSS premenné!)
@@ -173,12 +185,52 @@ docker compose restart
 - **Menu**: Nastaviť v Vzhľad → Menu
 - **Info sekcia**: Vytvoriť stránku "info" pre homepage
 
+## Migrácie - Automatické vytváranie stránok
+
+Projekt obsahuje migračný systém pre programatické vytváranie WordPress stránok.
+
+### Ako spustiť migráciu
+
+**Možnosť 1 - Cez WordPress Admin (odporúčané):**
+1. Prihlásiť sa do WP Admin
+2. Ísť do: **Nástroje → SSVK Migrácie**
+3. Kliknúť na **"Spustiť migráciu"**
+
+**Možnosť 2 - Cez WP-CLI:**
+```bash
+docker compose exec wordpress wp eval-file wp-content/themes/ssvk-theme/migrations/create-pages.php --allow-root
+```
+
+### Vytvorené stránky
+
+Migrácia vytvorí tieto stránky:
+- **O škole** (`/o-skole`) - základné info o škole
+- **Kontakt** (`/kontakt`) - kontaktné údaje, adresa, telefón
+- **Konzultačné hodiny** (`/konzultacne-hodiny`) - tabuľka konzultačných hodín
+- **Pracovný poriadok** (`/pracovny-poriadok`) - odkazy na PDF dokumenty
+- **Fotogaléria** (`/fotogaleria`) - galéria fotografií
+- **Verejné obstarávanie** (`/verejne-obstaravanie`) - dokumenty VO
+
+### Kde nahrať PDF dokumenty
+
+PDF súbory nahrajte do týchto priečinkov:
+- `wp-content/uploads/dokumenty/` - pracovné poriadky, organizačné poriadky
+- `wp-content/uploads/vo/` - dokumenty verejného obstarávania
+
+Alebo ich nahrajte cez WordPress Médiá a upravte odkazy na stránkach.
+
+### Poznámky
+- Stránky sa vytvoria len ak ešte neexistujú
+- Existujúce stránky nebudú prepísané
+- Po vytvorení budú automaticky pridané do hlavného menu
+- Obsah stránok je plne upraviteľný cez WordPress editor
+
 ## Ďalšie funkcie (budúce)
 
-- [ ] Dokumenty (PDF upload a zobrazenie)
-- [ ] Kontaktná stránka
+- [x] Dokumenty (PDF upload a zobrazenie)
+- [x] Kontaktná stránka
 - [ ] Pokročilejšie filtrovanie článkov
-- [ ] Galéria
+- [x] Galéria
 - [ ] Eventy/udalosti
 
 ## Verzovanie
