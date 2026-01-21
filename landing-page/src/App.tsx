@@ -17,7 +17,7 @@ const schools = [
     id: 'sosvk',
     name: 'SOŠ Veľký Krtíš',
     shortName: 'SOŠ VK',
-    url: 'https://sosvk.edupage.org/',
+    url: 'http://www.sos-vk.sk/',
     logo: '/images/sos-vk-logo-clean.png',
     position: 'top-right',
     color: '#26AA4B',
@@ -27,7 +27,7 @@ const schools = [
     id: 'sosz',
     name: 'SOŠ Želovce',
     shortName: 'SOŠŽ',
-    url: 'https://soszelovce.edupage.org/',
+    url: 'https://sos-zelovce.edupage.org/',
     logo: '/images/sosz-logo-clean.png',
     position: 'bottom-left',
     color: '#1781BD',
@@ -37,7 +37,7 @@ const schools = [
     id: 'ssmk',
     name: 'Spojená škola Modrý Kameň',
     shortName: 'SŠMK',
-    url: 'https://ssmk.edupage.org/',
+    url: 'https://ssmk.sk/',
     logo: '/images/ssmk-logo-clean.png',
     position: 'bottom-right',
     color: '#F58825',
@@ -87,8 +87,13 @@ function App() {
 
           <ul className={`navbar-menu ${menuOpen ? 'open' : ''}`}>
             <li>
-              <a href="/" onClick={() => setMenuOpen(false)}>
+              <a href="#domov" onClick={() => setMenuOpen(false)}>
                 Domov
+              </a>
+            </li>
+            <li>
+              <a href="#kontakt" onClick={() => setMenuOpen(false)}>
+                Kontakt
               </a>
             </li>
             {schools.map((school) => (
@@ -107,17 +112,63 @@ function App() {
             ))}
           </ul>
         </div>
-        
-        {/* Mobile overlay */}
-        <div 
-          className={`mobile-overlay ${menuOpen ? 'visible' : ''}`}
-          onClick={() => setMenuOpen(false)}
-        ></div>
       </nav>
+
+      {/* Mobile menu overlay */}
+      <div 
+        className={`mobile-menu-overlay ${menuOpen ? 'open' : ''}`}
+        onClick={() => setMenuOpen(false)}
+      >
+        <button 
+          className="mobile-menu-close"
+          onClick={() => setMenuOpen(false)}
+          aria-label="Zavrieť menu"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+        <div className="mobile-menu-content" onClick={(e) => e.stopPropagation()}>
+          <div className="mobile-menu-header">
+            <img src="/images/logo.svg" alt="SSVK" className="mobile-menu-logo" />
+            <span>Navigácia</span>
+          </div>
+          <nav className="mobile-menu-nav">
+            <a href="#domov" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+              <span className="mobile-menu-icon">🏠</span>
+              Domov
+            </a>
+            <a href="#kontakt" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+              <span className="mobile-menu-icon">📞</span>
+              Kontakt
+            </a>
+            <div className="mobile-menu-divider">
+              <span>Školy</span>
+            </div>
+            {schools.map((school) => (
+              <a
+                key={school.id}
+                href={school.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mobile-menu-link mobile-menu-school"
+                style={{ '--school-color': school.color } as React.CSSProperties}
+                onClick={() => setMenuOpen(false)}
+              >
+                <img src={school.logo} alt={school.shortName} className="mobile-menu-school-logo" />
+                <div className="mobile-menu-school-info">
+                  <span className="mobile-menu-school-name">{school.name}</span>
+                  <span className="mobile-menu-school-url">Navštíviť web →</span>
+                </div>
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main>
-        <section className="hero">
+        <section id="domov" className="hero">
           <div className="hero-content">
             <h1 className="hero-title">Stredné školy okresu Veľký Krtíš</h1>
             <p className="hero-subtitle">
@@ -163,6 +214,62 @@ function App() {
                 <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
               </svg>
               Klikni na logo školy pre prechod na jej stránku
+            </div>
+          </div>
+        </section>
+
+        {/* Kontakt sekcia */}
+        <section id="kontakt" className="contact-section">
+          <div className="contact-container">
+            <h2 className="contact-title">Kontakt</h2>
+            <div className="contact-card">
+              <div className="contact-header">
+                <img src="/images/logo.svg" alt="SSVK" className="contact-logo" />
+                <div className="contact-header-text">
+                  <h3>Gymnázium Augusta Horislava Škultétyho, Obchodná akadémia a Stredná odborná škola</h3>
+                </div>
+              </div>
+              
+              <div className="contact-grid">
+                <div className="contact-item">
+                  <div className="contact-icon">📍</div>
+                  <div className="contact-info">
+                    <span className="contact-label">Adresa</span>
+                    <span className="contact-value">Školská 21, 990 01 Veľký Krtíš</span>
+                  </div>
+                </div>
+                
+                <div className="contact-item">
+                  <div className="contact-icon">🏢</div>
+                  <div className="contact-info">
+                    <span className="contact-label">IČO</span>
+                    <span className="contact-value">57 046 492</span>
+                  </div>
+                </div>
+                
+                <div className="contact-item">
+                  <div className="contact-icon">📞</div>
+                  <div className="contact-info">
+                    <span className="contact-label">Sekretariát školy</span>
+                    <a href="tel:+421474870271" className="contact-value contact-link">047 / 48 702 71</a>
+                  </div>
+                </div>
+                
+                <div className="contact-item">
+                  <div className="contact-icon">✉️</div>
+                  <div className="contact-info">
+                    <span className="contact-label">E-mail</span>
+                    <a href="mailto:sekretariat@ssvk.sk" className="contact-value contact-link">sekretariat@ssvk.sk</a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="contact-footer">
+                <div className="contact-zriadovatel">
+                  <span className="contact-label">Zriaďovateľ</span>
+                  <span className="contact-value">Banskobystrický samosprávny kraj</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
