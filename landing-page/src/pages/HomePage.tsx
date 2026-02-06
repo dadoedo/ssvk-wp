@@ -1,0 +1,125 @@
+interface School {
+  id: string
+  name: string
+  url: string
+  logo: string
+  position: string
+  color: string
+  textColor: string
+}
+
+interface HomePageProps {
+  schools: School[]
+}
+
+export function HomePage({ schools }: HomePageProps) {
+  return (
+    <main>
+      <section id="domov" className="hero">
+        <div className="hero-content">
+          <h1 className="hero-title">Stredné školy okresu Veľký Krtíš</h1>
+          <p className="hero-subtitle">
+            Vitajte na spoločnom portáli stredných škôl v zriaďovateľskej pôsobnosti 
+            Banskobystrického samosprávneho kraja v okrese Veľký Krtíš.
+          </p>
+        </div>
+
+        {/* Štvorlistok */}
+        <div className="stvorlistok-wrapper">
+          <div className="stvorlistok-container">
+            <div className="stvorlistok-svg">
+              <img src="/images/logo.svg" alt="Štvorlistok škôl" />
+            </div>
+            
+            <div className="stvorlistok-zones">
+              {schools.map((school) => (
+                <a
+                  key={school.id}
+                  href={school.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`leaf-zone zone-${school.position}`}
+                  style={{
+                    '--hover-color': school.color,
+                    '--hover-text': school.textColor,
+                  } as React.CSSProperties}
+                  title={school.name}
+                >
+                  <img 
+                    src={school.logo} 
+                    alt={school.name}
+                    className="zone-logo"
+                  />
+                  <span className="zone-title">{school.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="stvorlistok-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+            Klikni na logo školy pre prechod na jej stránku
+          </div>
+        </div>
+      </section>
+
+      {/* Kontakt sekcia */}
+      <section id="kontakt" className="contact-section">
+        <div className="contact-container">
+          <h2 className="contact-title">Kontakt</h2>
+          <div className="contact-card">
+            <div className="contact-header">
+              <img src="/images/logo.svg" alt="SSVK" className="contact-logo" />
+              <div className="contact-header-text">
+                <h3>Gymnázium Augusta Horislava Škultétyho, Obchodná akadémia a Stredná odborná škola</h3>
+              </div>
+            </div>
+            
+            <div className="contact-grid">
+              <div className="contact-item">
+                <div className="contact-icon">📍</div>
+                <div className="contact-info">
+                  <span className="contact-label">Adresa</span>
+                  <span className="contact-value">Školská 21, 990 01 Veľký Krtíš</span>
+                </div>
+              </div>
+              
+              <div className="contact-item">
+                <div className="contact-icon">🏢</div>
+                <div className="contact-info">
+                  <span className="contact-label">IČO</span>
+                  <span className="contact-value">57 046 492</span>
+                </div>
+              </div>
+              
+              <div className="contact-item">
+                <div className="contact-icon">📞</div>
+                <div className="contact-info">
+                  <span className="contact-label">Sekretariát školy</span>
+                  <a href="tel:+421474870271" className="contact-value contact-link">047 / 48 702 71</a>
+                </div>
+              </div>
+              
+              <div className="contact-item">
+                <div className="contact-icon">✉️</div>
+                <div className="contact-info">
+                  <span className="contact-label">E-mail</span>
+                  <a href="mailto:sekretariat@ssvk.sk" className="contact-value contact-link">sekretariat@ssvk.sk</a>
+                </div>
+              </div>
+            </div>
+
+            <div className="contact-footer">
+              <div className="contact-zriadovatel">
+                <span className="contact-label">Zriaďovateľ</span>
+                <span className="contact-value">Banskobystrický samosprávny kraj</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
