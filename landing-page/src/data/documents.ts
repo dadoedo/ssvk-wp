@@ -21,5 +21,11 @@ export const documents: Document[] = [
     dateAdded: '2026-02-06',
     tags: ['voľby', 'školský parlament'],
   },
-  // Pridaj ďalšie dokumenty tu...
+  {
+    id: '2',
+    filename: '/pdfs/vyberove-konanie-02-26.pdf',
+    name: 'Oznámenie o vyhlásení výberového konania',
+    dateAdded: '2026-02-03',
+    tags: ['výberové konanie', 'voľby'],
+  }
 ]
