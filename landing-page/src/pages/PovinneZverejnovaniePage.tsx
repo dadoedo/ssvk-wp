@@ -1,9 +1,34 @@
-import { useState } from 'react'
-import { documents } from '../data/documents'
+import { useState, useEffect } from 'react'
+import { documentsApi } from '../api/client'
+import type { Document } from '../api/client'
+import { documents as staticDocuments } from '../data/documents'
 
 export function PovinneZverejnovaniePage() {
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedTag, setSelectedTag] = useState<string>('all')
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
+
+  useEffect(() => {
+    documentsApi.list()
+      .then(docs => {
+        setDocuments(docs)
+      })
+      .catch(() => {
+        // Fallback to static data if API is not available
+        setDocuments(staticDocuments.map(doc => ({
+          id: doc.id,
+          name: doc.name,
+          filename: doc.filename.split('/').pop() || doc.filename,
+          filePath: doc.filename,
+          dateAdded: doc.dateAdded,
+          tags: doc.tags,
+          createdBy: null,
+          updatedAt: doc.dateAdded,
+        })))
+      })
+      .finally(() => setIsLoading(false))
+  }, [])
 
   // Get all unique tags from documents
   const allTags = Array.from(new Set(documents.flatMap(doc => doc.tags)))
@@ -68,7 +93,11 @@ export function PovinneZverejnovaniePage() {
 
           {/* Documents list */}
           <div className="documents-list">
-            {filteredDocuments.length === 0 ? (
+            {isLoading ? (
+              <div className="documents-empty">
+                <p>Načítavam dokumenty...</p>
+              </div>
+            ) : filteredDocuments.length === 0 ? (
               <div className="documents-empty">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -79,7 +108,7 @@ export function PovinneZverejnovaniePage() {
               filteredDocuments.map(doc => (
                 <a
                   key={doc.id}
-                  href={doc.filename}
+                  href={doc.filePath}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="document-card"

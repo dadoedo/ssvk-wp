@@ -1,11 +1,16 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { HomePage } from './pages/HomePage'
 import { PovinneZverejnovaniePage } from './pages/PovinneZverejnovaniePage'
+import { LoginPage } from './pages/admin/LoginPage'
+import { DashboardPage } from './pages/admin/DashboardPage'
+import { DocumentsAdminPage } from './pages/admin/DocumentsAdminPage'
+import { UsersAdminPage } from './pages/admin/UsersAdminPage'
 import './App.css'
 
-// Dáta škôl - aktualizuj URL podľa potreby
 const schools = [
   {
     id: 'gahsvk',
@@ -49,16 +54,54 @@ const schools = [
   },
 ]
 
+function PublicLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Navbar schools={schools} />
+      {children}
+      <Footer schools={schools} />
+    </>
+  )
+}
+
 function App() {
   return (
-    <HashRouter>
-      <Navbar schools={schools} />
-      <Routes>
-        <Route path="/" element={<HomePage schools={schools} />} />
-        <Route path="/pz" element={<PovinneZverejnovaniePage />} />
-      </Routes>
-      <Footer schools={schools} />
-    </HashRouter>
+    <AuthProvider>
+      <HashRouter>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<PublicLayout><HomePage schools={schools} /></PublicLayout>} />
+          <Route path="/pz" element={<PublicLayout><PovinneZverejnovaniePage /></PublicLayout>} />
+
+          {/* Admin routes */}
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/documents"
+            element={
+              <ProtectedRoute>
+                <DocumentsAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute requireAdmin>
+                <UsersAdminPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </HashRouter>
+    </AuthProvider>
   )
 }
 

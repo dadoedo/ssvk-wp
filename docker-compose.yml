@@ -1,32 +1,42 @@
 services:
-  wordpress:
-    image: wordpress:latest
+  postgres:
+    image: postgres:16-alpine
+    container_name: ssvk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ssvk
+      POSTGRES_USER: ssvk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ssvk_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "8000:80"
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
-    volumes:
-      - wordpress_data:/var/www/html
-      - ./wp-content:/var/www/html/wp-content
-    depends_on:
-      - db
-    restart: unless-stopped
+      - "127.0.0.1:5460:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ssvk -d ssvk"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-      MYSQL_ROOT_PASSWORD: somewordpress
-    volumes:
-      - db_data:/var/lib/mysql
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ssvk-backend
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://ssvk:${POSTGRES_PASSWORD:-ssvk_password}@postgres:5432/ssvk?schema=public
+      PORT: 3001
+      NODE_ENV: production
+      SESSION_SECRET: ${SESSION_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://ssvk.sk}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ${UPLOAD_DIR:-/root/ssvk/pdfs}:/app/uploads
+    ports:
+      - "127.0.0.1:3001:3001"
 
 volumes:
-  wordpress_data:
-  db_data:
-
+  postgres_data:

@@ -27,5 +27,26 @@ export const documents: Document[] = [
     name: 'Oznámenie o vyhlásení výberového konania',
     dateAdded: '2026-02-03',
     tags: ['výberové konanie', 'voľby'],
+  },
+  {
+    id: '3',
+    filename: '/pdfs/statut-rady-skoly-19-2-26.pdf',
+    name: 'Štatút Rady školy',
+    dateAdded: '2026-02-19',
+    tags: ['štatút', 'rada školy'],
+  },
+  {
+    id: '4',
+    filename: '/pdfs/zapisinca-zasadnutie-rs-19-2-26.pdf',
+    name: 'Zápisnica zo zasadnutia RŠ',
+    dateAdded: '2026-02-19',
+    tags: ['zápisnica', 'zasadnutie', 'rada školy'],
+  },
+  {
+    id: '5',
+    filename: '/pdfs/zapsinica-volby-19-2-26.pdf',
+    name: 'Zápisnica z volieb ŠP',
+    dateAdded: '2026-02-19',
+    tags: ['zápisnica', 'voľby', 'školský parlament'],
   }
 ]
