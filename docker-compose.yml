@@ -33,10 +33,19 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN:-https://ssvk.sk}
       UPLOAD_DIR: /app/uploads
+      IMAGE_UPLOAD_DIR: /app/images/uploads
     volumes:
       - ${UPLOAD_DIR:-/root/ssvk/pdfs}:/app/uploads
+      - ${IMAGE_UPLOAD_DIR_HOST:-/root/ssvk/images/uploads}:/app/images/uploads
     ports:
-      - "127.0.0.1:3001:3001"
+      - "127.0.0.1:3011:3001"
+    networks:
+      - default
+      - web
+
+networks:
+  web:
+    external: true
 
 volumes:
   postgres_data:

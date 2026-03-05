@@ -123,9 +123,6 @@ export function HomePage({ schools }: HomePageProps) {
         <section className="articles-section">
           <div className="articles-section-container">
             <h2>Posledné pridané články</h2>
-            <p className="articles-section-hint">
-              Klikni na logo školy pre prechod na jej stránku
-            </p>
             <div className="articles-grid">
               {articles.map(article => (
                 <ArticleCard key={article.id} article={article} />
