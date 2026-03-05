@@ -177,15 +177,6 @@ export function HomePage({ schools }: HomePageProps) {
                 </div>
               </div>
             </div>
-
-            <div className="contact-footer">
-              <div className="contact-zriadovatel">
-                <span className="contact-label">Zriaďovateľ</span>
-                <div className="contact-zriadovatel-logo">
-                  <img src="/images/bbsk-logo.svg" alt="BBSK" />
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
