@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../index.js';
 import { requireAuth, requireSchoolAdminOrAbove, AuthenticatedRequest } from '../middleware/auth.js';
+import { getCached, setCache, invalidatePages, cacheKeys, TTL_MS } from '../services/cache.js';
 
 const router = Router();
 
@@ -82,7 +83,17 @@ async function getFullPath(page: { id: string; slug: string; parentId: string | 
 router.get('/tree', async (req: Request, res: Response): Promise<void> => {
   try {
     const { all } = req.query;
-    const tree = await buildPageTree(null, all !== 'true');
+    const publishedOnly = all !== 'true';
+    const cacheKey = cacheKeys.pagesTree(!publishedOnly);
+
+    const cached = getCached<PageWithChildren[]>(cacheKey);
+    if (cached) {
+      res.json(cached);
+      return;
+    }
+
+    const tree = await buildPageTree(null, publishedOnly);
+    setCache(cacheKey, tree, TTL_MS.pages);
     res.json(tree);
   } catch (error) {
     console.error('Failed to fetch page tree:', error);
@@ -320,6 +331,7 @@ router.post(
         },
       });
 
+      invalidatePages();
       res.status(201).json(page);
     } catch (error) {
       console.error('Failed to create page:', error);
@@ -388,6 +400,7 @@ router.put(
         },
       });
 
+      invalidatePages();
       res.json(page);
     } catch (error) {
       console.error('Failed to update page:', error);
@@ -422,6 +435,7 @@ router.delete(
 
       await prisma.page.delete({ where: { id } });
 
+      invalidatePages();
       res.json({ message: 'Page deleted successfully' });
     } catch (error) {
       console.error('Failed to delete page:', error);

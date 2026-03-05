@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../index.js';
 import { requireAuth, requireSchoolAdminOrAbove, AuthenticatedRequest } from '../middleware/auth.js';
+import { getCached, setCache, invalidateArticles, cacheKeys, TTL_MS } from '../services/cache.js';
 
 const router = Router();
 
@@ -21,13 +22,23 @@ const updateArticleSchema = articleSchema.partial();
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { tag, limit, published } = req.query;
-    
+
+    // Only cache public list (published articles only)
+    if (published !== 'all') {
+      const cacheKey = cacheKeys.articlesList(tag as string | undefined, limit as string | undefined);
+      const cached = getCached<unknown[]>(cacheKey);
+      if (cached) {
+        res.json(cached);
+        return;
+      }
+    }
+
     const where: Record<string, unknown> = {};
-    
+
     if (published !== 'all') {
       where.published = true;
     }
-    
+
     if (tag) {
       where.tags = {
         some: {
@@ -47,6 +58,11 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       orderBy: { publishedAt: 'desc' },
       take: limit ? parseInt(limit as string, 10) : undefined,
     });
+
+    if (published !== 'all') {
+      const cacheKey = cacheKeys.articlesList(tag as string | undefined, limit as string | undefined);
+      setCache(cacheKey, articles, TTL_MS.articles);
+    }
 
     res.json(articles);
   } catch (error) {
@@ -77,6 +93,13 @@ router.get('/admin', requireAuth, requireSchoolAdminOrAbove, async (_req: Reques
 router.get('/:slug', async (req: Request, res: Response): Promise<void> => {
   try {
     const slug = req.params.slug as string;
+    const cacheKey = cacheKeys.articleBySlug(slug);
+
+    const cached = getCached<unknown>(cacheKey);
+    if (cached) {
+      res.json(cached);
+      return;
+    }
 
     const article = await prisma.article.findUnique({
       where: { slug },
@@ -93,6 +116,7 @@ router.get('/:slug', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    setCache(cacheKey, article, TTL_MS.articles);
     res.json(article);
   } catch (error) {
     console.error('Failed to fetch article:', error);
@@ -142,6 +166,7 @@ router.post(
         },
       });
 
+      invalidateArticles();
       res.status(201).json(article);
     } catch (error) {
       console.error('Failed to create article:', error);
@@ -196,6 +221,7 @@ router.put(
         },
       });
 
+      invalidateArticles();
       res.json(article);
     } catch (error) {
       console.error('Failed to update article:', error);
@@ -220,6 +246,7 @@ router.delete(
 
       await prisma.article.delete({ where: { id } });
 
+      invalidateArticles();
       res.json({ message: 'Article deleted successfully' });
     } catch (error) {
       console.error('Failed to delete article:', error);
