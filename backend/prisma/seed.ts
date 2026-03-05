@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role, TagType } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -20,6 +20,131 @@ async function main() {
 
   console.log('Created admin user:', admin.email);
 
+  // Seed school tags
+  const schoolTags = [
+    { name: 'GAHŠVK', slug: 'gahsvk' },
+    { name: 'SOŠ VK', slug: 'sosvk' },
+    { name: 'SOŠ Želovce', slug: 'soszel' },
+    { name: 'SŠMK', slug: 'ssmk' },
+  ];
+
+  for (const tag of schoolTags) {
+    await prisma.tag.upsert({
+      where: { slug: tag.slug },
+      update: {},
+      create: {
+        name: tag.name,
+        slug: tag.slug,
+        type: TagType.SCHOOL,
+      },
+    });
+  }
+
+  console.log('Seeded', schoolTags.length, 'school tags');
+
+  // Seed placeholder pages
+  const oNasPage = await prisma.page.upsert({
+    where: { slug: 'o-nas' },
+    update: {},
+    create: {
+      title: 'O nás',
+      slug: 'o-nas',
+      content: '',
+      published: false,
+      sortOrder: 0,
+    },
+  });
+
+  const oNasChildren = [
+    { title: 'O škole', slug: 'o-skole', sortOrder: 1 },
+    { title: 'Rada školy', slug: 'rada-skoly', sortOrder: 2 },
+    { title: 'Školský parlament', slug: 'skolsky-parlament', sortOrder: 3 },
+    { title: 'Verejné obstarávanie', slug: 'verejne-obstaravanie', sortOrder: 4 },
+    { title: 'Voľné pracovné miesta', slug: 'volne-pracovne-miesta', sortOrder: 5 },
+    { title: 'Správy o výchovno-vzdelávacej činnosti', slug: 'spravy-o-cinnosti', sortOrder: 6 },
+    { title: 'Projekty', slug: 'projekty', sortOrder: 7 },
+  ];
+
+  for (const page of oNasChildren) {
+    await prisma.page.upsert({
+      where: { slug: page.slug },
+      update: {},
+      create: {
+        ...page,
+        content: '',
+        published: false,
+        parentId: oNasPage.id,
+      },
+    });
+  }
+
+  const studiumPage = await prisma.page.upsert({
+    where: { slug: 'studium' },
+    update: {},
+    create: {
+      title: 'Štúdium',
+      slug: 'studium',
+      content: '',
+      published: false,
+      sortOrder: 1,
+    },
+  });
+
+  const sosPage = await prisma.page.upsert({
+    where: { slug: 'stredna-odborna-skola' },
+    update: {},
+    create: {
+      title: 'Stredná odborná škola',
+      slug: 'stredna-odborna-skola',
+      content: '',
+      published: false,
+      sortOrder: 3,
+      parentId: studiumPage.id,
+    },
+  });
+
+  const studiumChildren = [
+    { title: 'Gymnázium A. H. Škultétyho', slug: 'gahsvk', sortOrder: 1 },
+    { title: 'Obchodná akadémia', slug: 'obchodna-akademia', sortOrder: 2 },
+    { title: 'Prijímacie skúšky', slug: 'prijimacie-skusky', sortOrder: 4 },
+    { title: 'Maturity/Záverečné skúšky', slug: 'maturity', sortOrder: 5 },
+  ];
+
+  for (const page of studiumChildren) {
+    await prisma.page.upsert({
+      where: { slug: page.slug },
+      update: {},
+      create: {
+        ...page,
+        content: '',
+        published: false,
+        parentId: studiumPage.id,
+      },
+    });
+  }
+
+  const sosChildren = [
+    { title: 'Veľký Krtíš', slug: 'sos-vk', sortOrder: 1 },
+    { title: 'Želovce', slug: 'sos-zelovce', sortOrder: 2 },
+    { title: 'Modrý Kameň', slug: 'sos-modry-kamen', sortOrder: 3 },
+  ];
+
+  for (const page of sosChildren) {
+    await prisma.page.upsert({
+      where: { slug: page.slug },
+      update: {},
+      create: {
+        ...page,
+        content: '',
+        published: false,
+        parentId: sosPage.id,
+      },
+    });
+  }
+
+  console.log('Seeded placeholder pages');
+
+  // Seed existing documents
   const existingDocs = [
     {
       name: 'Vyhlásenie volieb Školského parlamentu',

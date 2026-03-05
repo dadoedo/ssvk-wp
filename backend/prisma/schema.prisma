@@ -13,13 +13,14 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   password  String
   name      String
-  role      Role     @default(SCHOOL_ADMIN)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @default(SCHOOL_ADMIN)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  articles  Article[]
 }
 
 model Document {
@@ -40,4 +41,47 @@ model Session {
   expiresAt DateTime
 
   @@index([expiresAt])
+}
+
+enum TagType {
+  SCHOOL
+  CUSTOM
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  type     TagType   @default(CUSTOM)
+  articles Article[]
+}
+
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  content     String
+  coverImage  String?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  tags        Tag[]
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String   @default("")
+  published Boolean  @default(false)
+  sortOrder Int      @default(0)
+  parentId  String?
+  parent    Page?    @relation("PageHierarchy", fields: [parentId], references: [id])
+  children  Page[]   @relation("PageHierarchy")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

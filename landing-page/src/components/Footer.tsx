@@ -22,6 +22,17 @@ export function Footer({ schools }: FooterProps) {
           />
         </div>
 
+        <div className="footer-bbsk">
+          <p className="footer-bbsk-text">Zriaďovateľ:</p>
+          <a href="https://www.bbsk.sk" target="_blank" rel="noopener noreferrer" className="footer-bbsk-link">
+            <img 
+              src="/images/bbsk-logo.svg" 
+              alt="Banskobystrický samosprávny kraj" 
+              className="footer-bbsk-logo"
+            />
+          </a>
+        </div>
+
         <div className="footer-divider"></div>
 
         <div className="footer-bottom">

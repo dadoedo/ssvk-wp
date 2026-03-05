@@ -5,10 +5,16 @@ import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { HomePage } from './pages/HomePage'
 import { PovinneZverejnovaniePage } from './pages/PovinneZverejnovaniePage'
+import { ArticlesPage } from './pages/ArticlesPage'
+import { ArticleDetailPage } from './pages/ArticleDetailPage'
+import { DynamicPage } from './pages/DynamicPage'
 import { LoginPage } from './pages/admin/LoginPage'
 import { DashboardPage } from './pages/admin/DashboardPage'
 import { DocumentsAdminPage } from './pages/admin/DocumentsAdminPage'
 import { UsersAdminPage } from './pages/admin/UsersAdminPage'
+import { ArticlesAdminPage } from './pages/admin/ArticlesAdminPage'
+import { PagesAdminPage } from './pages/admin/PagesAdminPage'
+import { TagsAdminPage } from './pages/admin/TagsAdminPage'
 import './App.css'
 
 const schools = [
@@ -72,6 +78,9 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<PublicLayout><HomePage schools={schools} /></PublicLayout>} />
           <Route path="/pz" element={<PublicLayout><PovinneZverejnovaniePage /></PublicLayout>} />
+          <Route path="/clanky" element={<PublicLayout><ArticlesPage /></PublicLayout>} />
+          <Route path="/clanky/:slug" element={<PublicLayout><ArticleDetailPage /></PublicLayout>} />
+          <Route path="/stranka/*" element={<PublicLayout><DynamicPage /></PublicLayout>} />
 
           {/* Admin routes */}
           <Route path="/admin/login" element={<LoginPage />} />
@@ -96,6 +105,30 @@ function App() {
             element={
               <ProtectedRoute requireAdmin>
                 <UsersAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/articles"
+            element={
+              <ProtectedRoute>
+                <ArticlesAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/pages"
+            element={
+              <ProtectedRoute>
+                <PagesAdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/tags"
+            element={
+              <ProtectedRoute>
+                <TagsAdminPage />
               </ProtectedRoute>
             }
           />
