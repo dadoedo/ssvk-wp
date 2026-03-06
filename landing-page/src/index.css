@@ -2874,6 +2874,7 @@ main {
   padding: 0;
   background: var(--blue);
   border: none;
+  border-radius: var(--radius-full);
   color: white;
   cursor: pointer;
   transition: var(--transition);
