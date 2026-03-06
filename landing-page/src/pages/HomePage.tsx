@@ -54,8 +54,8 @@ export function HomePage({ schools }: HomePageProps) {
   useEffect(() => {
     const loadArticles = async () => {
       try {
-        const data = await articlesApi.list({ limit: 3 })
-        setArticles(data)
+        const { articles } = await articlesApi.list({ limit: 3 })
+        setArticles(articles)
       } catch (error) {
         console.error('Failed to load articles:', error)
       } finally {
@@ -122,7 +122,12 @@ export function HomePage({ schools }: HomePageProps) {
       {!articlesLoading && articles.length > 0 && (
         <section className="articles-section">
           <div className="articles-section-container">
-            <h2>Posledné pridané články</h2>
+            <div className="articles-section-header">
+              <h2>Posledné pridané články</h2>
+              <Link to="/clanky" className="articles-section-link">
+                Všetky články →
+              </Link>
+            </div>
             <div className="articles-grid">
               {articles.map(article => (
                 <ArticleCard key={article.id} article={article} />

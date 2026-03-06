@@ -55,6 +55,8 @@ deploy_backend() {
   
   echo -e "${GREEN}[4/4] Loading and restarting...${NC}"
   ssh "$REMOTE_HOST" "cd $REMOTE_DIR && \
+    mkdir -p ~/ssvk/pdfs ~/ssvk/images/uploads && \
+    chown -R 1001:1001 ~/ssvk/pdfs ~/ssvk/images/uploads && \
     docker load < $ARCHIVE_NAME && \
     rm $ARCHIVE_NAME && \
     docker compose up -d backend"

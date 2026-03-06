@@ -21,12 +21,20 @@ const updateArticleSchema = articleSchema.partial();
 
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { tag, limit, published } = req.query;
+    const { tag, limit, page, q, published } = req.query;
+    const pageNum = page ? Math.max(1, parseInt(page as string, 10)) : 1;
+    const limitNum = limit ? Math.min(100, Math.max(1, parseInt(limit as string, 10))) : undefined;
+    const search = (q as string)?.trim() || undefined;
 
     // Only cache public list (published articles only)
     if (published !== 'all') {
-      const cacheKey = cacheKeys.articlesList(tag as string | undefined, limit as string | undefined);
-      const cached = getCached<unknown[]>(cacheKey);
+      const cacheKey = cacheKeys.articlesList(
+        tag as string | undefined,
+        limitNum?.toString(),
+        pageNum.toString(),
+        search
+      );
+      const cached = getCached<{ articles: unknown[]; total: number }>(cacheKey);
       if (cached) {
         res.json(cached);
         return;
@@ -47,24 +55,42 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       };
     }
 
-    const articles = await prisma.article.findMany({
-      where,
-      include: {
-        tags: true,
-        author: {
-          select: { id: true, name: true },
-        },
-      },
-      orderBy: { publishedAt: 'desc' },
-      take: limit ? parseInt(limit as string, 10) : undefined,
-    });
-
-    if (published !== 'all') {
-      const cacheKey = cacheKeys.articlesList(tag as string | undefined, limit as string | undefined);
-      setCache(cacheKey, articles, TTL_MS.articles);
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
-    res.json(articles);
+    const [articles, total] = await Promise.all([
+      prisma.article.findMany({
+        where,
+        include: {
+          tags: true,
+          author: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: { publishedAt: 'desc' },
+        skip: limitNum ? (pageNum - 1) * limitNum : undefined,
+        take: limitNum,
+      }),
+      prisma.article.count({ where }),
+    ]);
+
+    const response = { articles, total };
+
+    if (published !== 'all') {
+      const cacheKey = cacheKeys.articlesList(
+        tag as string | undefined,
+        limitNum?.toString(),
+        pageNum.toString(),
+        search
+      );
+      setCache(cacheKey, response, TTL_MS.articles);
+    }
+
+    res.json(response);
   } catch (error) {
     console.error('Failed to fetch articles:', error);
     res.status(500).json({ error: 'Failed to fetch articles' });

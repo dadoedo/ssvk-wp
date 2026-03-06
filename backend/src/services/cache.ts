@@ -41,8 +41,12 @@ export function invalidateArticles(): void {
 
 export const cacheKeys = {
   pagesTree: (all: boolean) => `pages:tree:${all ? 'all' : 'published'}`,
-  articlesList: (tag: string | undefined, limit: string | undefined) =>
-    `articles:list:${tag ?? ''}:${limit ?? ''}`,
+  articlesList: (
+    tag: string | undefined,
+    limit: string | undefined,
+    page?: string,
+    search?: string
+  ) => `articles:list:${tag ?? ''}:${limit ?? ''}:${page ?? ''}:${search ?? ''}`,
   articleBySlug: (slug: string) => `articles:slug:${slug}`,
 };
 

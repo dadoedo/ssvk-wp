@@ -193,13 +193,20 @@ export const tagsApi = {
   delete: (id: string) => api.delete<{ message: string }>(`/tags/${id}`),
 };
 
+export interface ArticlesListResponse {
+  articles: Article[];
+  total: number;
+}
+
 export const articlesApi = {
-  list: (params?: { tag?: string; limit?: number }) => {
+  list: (params?: { tag?: string; limit?: number; page?: number; q?: string }) => {
     const searchParams = new URLSearchParams();
     if (params?.tag) searchParams.set('tag', params.tag);
     if (params?.limit) searchParams.set('limit', params.limit.toString());
+    if (params?.page) searchParams.set('page', params.page.toString());
+    if (params?.q) searchParams.set('q', params.q);
     const query = searchParams.toString();
-    return api.get<Article[]>(`/articles${query ? `?${query}` : ''}`);
+    return api.get<ArticlesListResponse>(`/articles${query ? `?${query}` : ''}`);
   },
   
   listAdmin: () => api.get<Article[]>('/articles/admin'),
