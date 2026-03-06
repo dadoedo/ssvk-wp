@@ -108,7 +108,7 @@ export function Navbar({ schools }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
-  const [mobileAccordion, setMobileAccordion] = useState<string | null>(null)
+  const [mobileAccordionOpen, setMobileAccordionOpen] = useState<Set<string>>(new Set())
   const [menuConfig, setMenuConfig] = useState<MenuItem[]>(() => buildMenu([]))
   const navigate = useNavigate()
   const location = useLocation()
@@ -132,6 +132,7 @@ export function Navbar({ schools }: NavbarProps) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
+      setMobileAccordionOpen(new Set())
     }
   }, [menuOpen])
 
@@ -234,13 +235,26 @@ export function Navbar({ schools }: NavbarProps) {
     )
   }
 
-  const renderMobileMenuItem = (item: MenuItem, depth = 0) => {
+  const renderMobileMenuItem = (item: MenuItem, depth = 0, parentKey = '') => {
     const hasChildren = item.children && item.children.length > 0
-    const isOpen = mobileAccordion === item.label
+    const itemKey = parentKey ? `${parentKey}::${item.label}` : item.label
+    const isOpen = mobileAccordionOpen.has(itemKey)
+
+    const toggleAccordion = () => {
+      setMobileAccordionOpen(prev => {
+        const next = new Set(prev)
+        if (isOpen) {
+          next.delete(itemKey)
+        } else {
+          next.add(itemKey)
+        }
+        return next
+      })
+    }
 
     if (hasChildren) {
       return (
-        <div key={item.label} className="mobile-accordion">
+        <div key={itemKey} className="mobile-accordion">
           <div className={`mobile-accordion-trigger ${isOpen ? 'open' : ''}`}>
             {item.href ? (
               <Link 
@@ -255,7 +269,7 @@ export function Navbar({ schools }: NavbarProps) {
             )}
             <button 
               className="mobile-accordion-toggle"
-              onClick={() => setMobileAccordion(isOpen ? null : item.label)}
+              onClick={toggleAccordion}
               aria-label={isOpen ? 'Zavrieť' : 'Otvoriť'}
             >
               <svg className="accordion-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -265,7 +279,7 @@ export function Navbar({ schools }: NavbarProps) {
           </div>
           {isOpen && (
             <div className="mobile-accordion-content">
-              {item.children!.map(child => renderMobileMenuItem(child, depth + 1))}
+              {item.children!.map(child => renderMobileMenuItem(child, depth + 1, itemKey))}
             </div>
           )}
         </div>
