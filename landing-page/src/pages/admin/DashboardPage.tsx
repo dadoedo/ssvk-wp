@@ -23,11 +23,35 @@ export function DashboardPage() {
       </div>
 
       <div className="admin-menu">
+        <Link to="/admin/articles" className="admin-menu-item">
+          <div className="admin-menu-icon">📝</div>
+          <div className="admin-menu-content">
+            <h2>Články</h2>
+            <p>Správa článkov a noviniek</p>
+          </div>
+        </Link>
+
+        <Link to="/admin/pages" className="admin-menu-item">
+          <div className="admin-menu-icon">📑</div>
+          <div className="admin-menu-content">
+            <h2>Stránky</h2>
+            <p>Správa obsahových stránok</p>
+          </div>
+        </Link>
+
         <Link to="/admin/documents" className="admin-menu-item">
           <div className="admin-menu-icon">📄</div>
           <div className="admin-menu-content">
-            <h2>Povinné zverejňovanie</h2>
+            <h2>Dokumenty</h2>
             <p>Správa dokumentov na povinné zverejňovanie</p>
+          </div>
+        </Link>
+
+        <Link to="/admin/tags" className="admin-menu-item">
+          <div className="admin-menu-icon">🏷️</div>
+          <div className="admin-menu-content">
+            <h2>Tagy</h2>
+            <p>Správa tagov pre články</p>
           </div>
         </Link>
 

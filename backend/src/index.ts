@@ -6,6 +6,10 @@ import { PrismaSessionStore } from './services/session-store.js';
 import authRoutes from './routes/auth.js';
 import documentsRoutes from './routes/documents.js';
 import adminRoutes from './routes/admin.js';
+import articlesRoutes from './routes/articles.js';
+import pagesRoutes from './routes/pages.js';
+import tagsRoutes from './routes/tags.js';
+import uploadRoutes from './routes/upload.js';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -50,6 +54,10 @@ app.use(session({
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/articles', articlesRoutes);
+app.use('/api/pages', pagesRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

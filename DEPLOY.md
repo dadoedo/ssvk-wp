@@ -18,10 +18,12 @@ ssh alldevs-hetzner
 
 # Vytvorenie adresárov
 mkdir -p ~/ssvk/pdfs
+mkdir -p ~/ssvk/images/uploads
 cd ~/ssvk
 
 # Dôležité: Nastavenie oprávnení pre uploads (backend beží ako uid 1001 v kontajneri)
 chown -R 1001:1001 ~/ssvk/pdfs
+chown -R 1001:1001 ~/ssvk/images/uploads
 ```
 
 ### 2. Nahratie súborov
@@ -173,13 +175,18 @@ ssh alldevs-hetzner "cd ~/ssvk && docker compose restart"
 
 ## Riešenie problémov
 
-### EACCES: permission denied na /app/uploads
+### Port 3001 already allocated
 
-Backend beží ako používateľ `expressjs` (uid 1001). Ak host adresár pre PDF má zlé oprávnenia:
+Na serveri môže port 3001 používať iná aplikácia (napr. abmacik-app). SSVK backend používa port 3011 na hoste a Caddy sa pripája cez Docker sieť `web` na `ssvk-backend:3001`.
+
+### EACCES: permission denied na /app/uploads alebo /app/images/uploads
+
+Backend beží ako používateľ `expressjs` (uid 1001). Ak host adresáre pre uploady majú zlé oprávnenia:
 
 ```bash
 ssh alldevs-hetzner
 chown -R 1001:1001 ~/ssvk/pdfs
+chown -R 1001:1001 ~/ssvk/images/uploads
 docker compose -f ~/ssvk/docker-compose.yml restart backend
 ```
 

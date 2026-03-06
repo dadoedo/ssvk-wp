@@ -1,3 +1,8 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { articlesApi } from '../api/client'
+import type { Article } from '../api/client'
+
 interface School {
   id: string
   name: string
@@ -12,7 +17,55 @@ interface HomePageProps {
   schools: School[]
 }
 
+function ArticleCard({ article }: { article: Article }) {
+  return (
+    <Link to={`/clanky/${article.slug}`} className="article-card">
+      <div className="article-card-image">
+        {article.coverImage ? (
+          <img src={article.coverImage} alt={article.title} />
+        ) : (
+          <div className="article-card-image-placeholder">📝</div>
+        )}
+      </div>
+      <div className="article-card-content">
+        <div className="article-card-meta">
+          <span>
+            {article.publishedAt
+              ? new Date(article.publishedAt).toLocaleDateString('sk-SK')
+              : new Date(article.createdAt).toLocaleDateString('sk-SK')}
+          </span>
+        </div>
+        <h3 className="article-card-title">{article.title}</h3>
+        {article.excerpt && (
+          <p className="article-card-excerpt">{article.excerpt}</p>
+        )}
+        <span className="article-card-cta">
+          Čítať viac →
+        </span>
+      </div>
+    </Link>
+  )
+}
+
 export function HomePage({ schools }: HomePageProps) {
+  const [articles, setArticles] = useState<Article[]>([])
+  const [articlesLoading, setArticlesLoading] = useState(true)
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        const data = await articlesApi.list({ limit: 3 })
+        setArticles(data)
+      } catch (error) {
+        console.error('Failed to load articles:', error)
+      } finally {
+        setArticlesLoading(false)
+      }
+    }
+
+    loadArticles()
+  }, [])
+
   return (
     <main>
       <section id="domov" className="hero">
@@ -65,6 +118,20 @@ export function HomePage({ schools }: HomePageProps) {
         </div>
       </section>
 
+      {/* Články sekcia */}
+      {!articlesLoading && articles.length > 0 && (
+        <section className="articles-section">
+          <div className="articles-section-container">
+            <h2>Posledné pridané články</h2>
+            <div className="articles-grid">
+              {articles.map(article => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Kontakt sekcia */}
       <section id="kontakt" className="contact-section">
         <div className="contact-container">
@@ -108,13 +175,6 @@ export function HomePage({ schools }: HomePageProps) {
                   <span className="contact-label">E-mail</span>
                   <a href="mailto:sekretariat@ssvk.sk" className="contact-value contact-link">sekretariat@ssvk.sk</a>
                 </div>
-              </div>
-            </div>
-
-            <div className="contact-footer">
-              <div className="contact-zriadovatel">
-                <span className="contact-label">Zriaďovateľ</span>
-                <span className="contact-value">Banskobystrický samosprávny kraj</span>
               </div>
             </div>
           </div>

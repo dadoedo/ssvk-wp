@@ -48,7 +48,21 @@ export function PovinneZverejnovaniePage() {
       <section className="documents-section">
         <div className="documents-container">
           <h1 className="documents-title">Povinné zverejňovanie</h1>
-          
+
+          {/* Info o registri dokumentov */}
+          <div className="documents-info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+            </svg>
+            <p>
+              Všetky zverejnené dokumenty nájdete na stránke{' '}
+              <a href="https://zverejnovanie-ovzp.bbsk.sk/57046492/" target="_blank" rel="noopener noreferrer">
+                Register objednávok a faktúr BBSK
+              </a>{' '}
+              .
+            </p>
+          </div>
+
           {/* Filters */}
           <div className="documents-filters">
             <div className="filter-group">
