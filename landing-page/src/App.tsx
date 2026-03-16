@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { MenuProvider } from './contexts/MenuContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ScrollToTop } from './components/ScrollToTop'
 import { Navbar } from './components/Navbar'
@@ -74,6 +75,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <AuthProvider>
+      <MenuProvider>
       <HashRouter>
         <ScrollToTop />
         <Routes>
@@ -136,6 +138,7 @@ function App() {
           />
         </Routes>
       </HashRouter>
+      </MenuProvider>
     </AuthProvider>
   )
 }

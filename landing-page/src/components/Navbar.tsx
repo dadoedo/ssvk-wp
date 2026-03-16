@@ -1,16 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { pagesApi } from '../api/client'
-
-interface PageTreeItem {
-  id: string;
-  title: string;
-  slug: string;
-  published: boolean;
-  sortOrder: number;
-  parentId: string | null;
-  children: PageTreeItem[];
-}
+import { useMenu } from '../contexts/MenuContext'
 
 interface School {
   id: string
@@ -32,92 +22,15 @@ interface NavbarProps {
   schools: School[]
 }
 
-const ziackeKnizkySubmenu: MenuItem[] = [
-  { label: 'Edupage GAHSVK', href: 'https://gahsvk.edupage.org/login/', external: true },
-  { label: 'Edupage SOSVK', href: 'https://sosvk.edupage.org/login/', external: true },
-  { label: 'Edupage SOSZEL', href: 'https://sos-zelovce.edupage.org/', external: true },
-  { label: 'Edupage SSMK', href: 'https://ssmk.edupage.org/', external: true },
-]
-
-function hasPublishedDescendant(page: PageTreeItem): boolean {
-  if (page.published) return true
-  return page.children?.some(child => hasPublishedDescendant(child)) || false
-}
-
-function pageTreeToMenuItem(page: PageTreeItem, parentPath = ''): MenuItem | null {
-  const fullPath = parentPath ? `${parentPath}/${page.slug}` : page.slug
-  const href = page.published ? `/stranka/${fullPath}` : undefined
-  
-  const visibleChildren = page.children?.filter(child => hasPublishedDescendant(child)) || []
-  const childMenuItems = visibleChildren
-    .map(child => pageTreeToMenuItem(child, fullPath))
-    .filter((item): item is MenuItem => item !== null)
-  
-  if (childMenuItems.length > 0) {
-    return {
-      label: page.title,
-      href,
-      children: childMenuItems,
-    }
-  }
-  
-  if (page.published) {
-    return {
-      label: page.title,
-      href,
-    }
-  }
-  
-  return null
-}
-
-function buildMenu(pages: PageTreeItem[]): MenuItem[] {
-  const oNasPage = pages.find(p => p.slug === 'o-nas')
-  const studiumPage = pages.find(p => p.slug === 'studium')
-
-  const oNasVisibleChildren = oNasPage?.children.filter(c => hasPublishedDescendant(c)) || []
-  const oNasChildren: MenuItem[] = oNasVisibleChildren
-    .map(child => pageTreeToMenuItem(child, 'o-nas'))
-    .filter((item): item is MenuItem => item !== null)
-  oNasChildren.push({ label: 'Dokumenty', href: '/pz' })
-
-  const studiumVisibleChildren = studiumPage?.children.filter(c => hasPublishedDescendant(c)) || []
-  const studiumChildren: MenuItem[] = studiumVisibleChildren
-    .map(child => pageTreeToMenuItem(child, 'studium'))
-    .filter((item): item is MenuItem => item !== null)
-  studiumChildren.push({ label: 'Žiacke knižky', children: ziackeKnizkySubmenu })
-
-  return [
-    { label: 'Domov', href: '/' },
-    { 
-      label: 'O nás', 
-      href: oNasPage?.published ? '/stranka/o-nas' : undefined,
-      children: oNasChildren,
-    },
-    { 
-      label: 'Štúdium', 
-      href: studiumPage?.published ? '/stranka/studium' : undefined,
-      children: studiumChildren,
-    },
-    { label: 'Kontakt', href: '/#kontakt' },
-  ]
-}
-
 export function Navbar({ schools }: NavbarProps) {
+  const { menuConfig } = useMenu()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [mobileAccordionOpen, setMobileAccordionOpen] = useState<Set<string>>(new Set())
-  const [menuConfig, setMenuConfig] = useState<MenuItem[]>(() => buildMenu([]))
   const navigate = useNavigate()
   const location = useLocation()
-
-  useEffect(() => {
-    pagesApi.tree(true).then((pages: PageTreeItem[]) => {
-      setMenuConfig(buildMenu(pages))
-    }).catch(console.error)
-  }, [])
 
   useEffect(() => {
     const handleScroll = () => {

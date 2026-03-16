@@ -35,6 +35,16 @@ export function Footer({ schools }: FooterProps) {
 
         <div className="footer-divider"></div>
 
+        <div className="footer-gdpr">
+          <p className="footer-gdpr-text">
+            Týmto Vám oznamujeme, že dohľad nad spracovaním osobných údajov v našej spoločnosti zabezpečuje firma{' '}
+            <strong>EuroTRADING s.r.o.</strong>, a v súlade s §&nbsp;44 zákona č.&nbsp;18/2018 Z.z. a článkom č.&nbsp;37 Nariadenia Európskeho parlamentu a Rady (EÚ) 2016/679 nám poskytuje zodpovednú osobu, ktorú môžete kontaktovať na adrese{' '}
+            <a href="mailto:zo@eurotrading.sk" className="footer-gdpr-link">zo@eurotrading.sk</a>.
+            Viac informácií si môžete prečítať{' '}
+            <a href="https://www.eurotrading.sk/zo" target="_blank" rel="noopener noreferrer" className="footer-gdpr-link">tu</a>.
+          </p>
+        </div>
+
         <div className="footer-bottom">
           <div className="footer-links">
             {schools.map((school) => (

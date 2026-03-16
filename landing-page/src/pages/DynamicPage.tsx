@@ -4,6 +4,7 @@ import { pagesApi } from '../api/client';
 import type { PageWithNavigation } from '../api/client';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { PageSidebar } from '../components/PageSidebar';
+import { useMenu } from '../contexts/MenuContext';
 
 export function DynamicPage() {
   const location = useLocation();
@@ -62,7 +63,15 @@ export function DynamicPage() {
   }
 
   const { page, breadcrumbs, siblings, children, parent } = pageData;
-  const hasSidebar = siblings.length > 1 || children.length > 0 || parent !== null;
+  const hasSidebar = siblings.length > 1 || parent !== null;
+  const { getMenuChildrenForPath } = useMenu();
+  const menuChildren = getMenuChildrenForPath(path);
+
+  // Buttons pod H1: preferuj menu children (vrátane fixných položiek ako Dokumenty, Žiacke knižky)
+  const buttonItems =
+    menuChildren && menuChildren.length > 0
+      ? menuChildren
+      : children.map(c => ({ label: c.title, href: `/stranka/${pageData.fullPath}/${c.slug}`, external: false as const }));
 
   return (
     <main className="page-layout">
@@ -74,22 +83,42 @@ export function DynamicPage() {
             parent={parent}
             current={{ id: page.id, title: page.title, slug: page.slug }}
             siblings={siblings}
-            children={children}
             basePath={pageData.fullPath}
           />
         )}
 
         <article className="page-content">
           <h1>{page.title}</h1>
-          {page.content ? (
+          {buttonItems.length > 0 && (
+            <div className="page-children-buttons">
+              {buttonItems.map((item) =>
+                item.external ? (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="page-child-button"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.href ?? item.label}
+                    to={item.href!}
+                    className="page-child-button"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
+            </div>
+          )}
+          {page.content && (
             <div
               className="page-content-body"
               dangerouslySetInnerHTML={{ __html: page.content }}
             />
-          ) : (
-            <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-              Obsah tejto stránky sa pripravuje.
-            </p>
           )}
         </article>
       </div>
