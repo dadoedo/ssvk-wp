@@ -11,6 +11,8 @@ NC='\033[0m'
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REMOTE_HOST="alldevs-hetzner"
 REMOTE_DIR="~/ssvk"
+# Absolútna cesta na serveri (backend uid 1001 potrebuje zápis do uploads)
+REMOTE_SSVK_PATH="/root/ssvk"
 
 usage() {
   echo "Usage: $0 [frontend|backend|all]"
@@ -31,6 +33,9 @@ deploy_frontend() {
   
   echo -e "${GREEN}Uploading to server...${NC}"
   rsync -avz --progress dist/ "$REMOTE_HOST:$REMOTE_DIR/"
+  
+  echo -e "${GREEN}Fixing upload permissions (backend uid 1001)...${NC}"
+  ssh "$REMOTE_HOST" "mkdir -p $REMOTE_SSVK_PATH/images/uploads $REMOTE_SSVK_PATH/pdfs && chown -R 1001:1001 $REMOTE_SSVK_PATH/images/uploads $REMOTE_SSVK_PATH/pdfs"
   
   echo -e "${GREEN}✓ Frontend deployed!${NC}"
 }
@@ -55,8 +60,8 @@ deploy_backend() {
   
   echo -e "${GREEN}[4/4] Loading and restarting...${NC}"
   ssh "$REMOTE_HOST" "cd $REMOTE_DIR && \
-    mkdir -p ~/ssvk/pdfs ~/ssvk/images/uploads && \
-    chown -R 1001:1001 ~/ssvk/pdfs ~/ssvk/images/uploads && \
+    mkdir -p $REMOTE_SSVK_PATH/pdfs $REMOTE_SSVK_PATH/images/uploads && \
+    chown -R 1001:1001 $REMOTE_SSVK_PATH/pdfs $REMOTE_SSVK_PATH/images/uploads && \
     docker load < $ARCHIVE_NAME && \
     rm $ARCHIVE_NAME && \
     docker compose up -d backend"
